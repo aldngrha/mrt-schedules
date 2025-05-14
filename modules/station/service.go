@@ -1,6 +1,8 @@
 package station
 
 import (
+	"encoding/json"
+	"github.com/aldngrha/mrt-schedules.git/modules/common/client"
 	"net/http"
 	"time"
 )
@@ -23,8 +25,21 @@ func NewService() Service {
 
 func (s *service) GetAllStations() (response []StationResponse, err error) {
 	url := "https://www.jakartamrt.co.id/id/val/stasions"
-	// hit url
 
-	//show responses
+	bodyResponse, err := client.DoRequest(s.client, url)
+	if err != nil {
+		return
+	}
+
+	var stations []Station
+	err = json.Unmarshal(bodyResponse, &stations)
+
+	for _, item := range stations {
+		response = append(response, StationResponse{
+			Id:   item.Id,
+			Name: item.Name,
+		})
+	}
+
 	return
 }
